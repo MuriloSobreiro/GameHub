@@ -93,9 +93,9 @@ public class GeradorTabuleiro : MonoBehaviour
         if(j>1 && j<6)//Não há peças nas linhas de idex 2 a 5
             return (0,"");
         if (j == 1)//As linhas de index 1 e 6 são paredes de peões
-            return (12, "peaoB");
+            return (12, "PeaoB");
         if (j == 6)
-            return (6,"peaoP");
+            return (6,"PeaoP");
         if ((i == 0 || i == 7) && j == 0)//Posição das Torres
             return (9, "Torre");
         if ((i == 0 || i == 7) && j == 7)

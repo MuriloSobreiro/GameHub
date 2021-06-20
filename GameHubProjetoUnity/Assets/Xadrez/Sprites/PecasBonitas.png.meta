@@ -1,7 +1,43 @@
 fileFormatVersion: 2
 guid: 64311a27ff40b2742844fc9cf7e25d88
 TextureImporter:
-  internalIDToNameTable: []
+  internalIDToNameTable:
+  - first:
+      213: -6535674208192232814
+    second: PecasBonitas_0
+  - first:
+      213: -3765541088322607862
+    second: PecasBonitas_1
+  - first:
+      213: -7267465843939152863
+    second: PecasBonitas_2
+  - first:
+      213: -7729914720340142763
+    second: PecasBonitas_3
+  - first:
+      213: -3669379637194888750
+    second: PecasBonitas_4
+  - first:
+      213: 7514896623462344833
+    second: PecasBonitas_5
+  - first:
+      213: 3451415501511075573
+    second: PecasBonitas_6
+  - first:
+      213: -6140863324906095670
+    second: PecasBonitas_7
+  - first:
+      213: -6590482213554891517
+    second: PecasBonitas_8
+  - first:
+      213: 7010668960100710446
+    second: PecasBonitas_9
+  - first:
+      213: 6479079336869897410
+    second: PecasBonitas_10
+  - first:
+      213: 2057987483157561142
+    second: PecasBonitas_11
   externalObjects: {}
   serializedVersion: 11
   mipmaps:
@@ -48,7 +84,7 @@ TextureImporter:
   spritePivot: {x: 0.5, y: 0.5}
   spritePixelsToUnits: 100
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
-  spriteGenerateFallbackPhysicsShape: 0
+  spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
   alphaIsTransparency: 1
   spriteTessellationDetail: -1
@@ -89,7 +125,259 @@ TextureImporter:
     forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
-    sprites: []
+    sprites:
+    - serializedVersion: 2
+      name: PecasBonitas_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 290
+        width: 290
+        height: 290
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 29205056fee9c45a0800000000000000
+      internalID: -6535674208192232814
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PecasBonitas_1
+      rect:
+        serializedVersion: 2
+        x: 290
+        y: 290
+        width: 290
+        height: 290
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a05a463b45c1ebbc0800000000000000
+      internalID: -3765541088322607862
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PecasBonitas_2
+      rect:
+        serializedVersion: 2
+        x: 580
+        y: 290
+        width: 290
+        height: 290
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 12ce8b2d156c42b90800000000000000
+      internalID: -7267465843939152863
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PecasBonitas_3
+      rect:
+        serializedVersion: 2
+        x: 870
+        y: 290
+        width: 290
+        height: 290
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 55510164483d9b490800000000000000
+      internalID: -7729914720340142763
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PecasBonitas_4
+      rect:
+        serializedVersion: 2
+        x: 1160
+        y: 290
+        width: 290
+        height: 290
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2d962f249aeb31dc0800000000000000
+      internalID: -3669379637194888750
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PecasBonitas_5
+      rect:
+        serializedVersion: 2
+        x: 1450
+        y: 290
+        width: 290
+        height: 290
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1886145d9a64a4860800000000000000
+      internalID: 7514896623462344833
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PecasBonitas_6
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 290
+        height: 290
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5f628dbbc14e5ef20800000000000000
+      internalID: 3451415501511075573
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PecasBonitas_7
+      rect:
+        serializedVersion: 2
+        x: 290
+        y: 0
+        width: 290
+        height: 290
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: acb7fb8775547caa0800000000000000
+      internalID: -6140863324906095670
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PecasBonitas_8
+      rect:
+        serializedVersion: 2
+        x: 580
+        y: 0
+        width: 290
+        height: 290
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 305d78a3857e984a0800000000000000
+      internalID: -6590482213554891517
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PecasBonitas_9
+      rect:
+        serializedVersion: 2
+        x: 870
+        y: 0
+        width: 290
+        height: 290
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e28f8ac6646ea4160800000000000000
+      internalID: 7010668960100710446
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PecasBonitas_10
+      rect:
+        serializedVersion: 2
+        x: 1160
+        y: 0
+        width: 290
+        height: 290
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2c424b944505ae950800000000000000
+      internalID: 6479079336869897410
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PecasBonitas_11
+      rect:
+        serializedVersion: 2
+        x: 1450
+        y: 0
+        width: 290
+        height: 290
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 63f7ec556b07f8c10800000000000000
+      internalID: 2057987483157561142
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     outline: []
     physicsShape: []
     bones: []
