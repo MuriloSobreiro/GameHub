@@ -2,7 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using UnityEngine.UI;
 
 public class PecaXadrezControlador : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, IBeginDragHandler, IEndDragHandler, IDragHandler
 {
@@ -10,7 +9,8 @@ public class PecaXadrezControlador : MonoBehaviour, IPointerDownHandler, IPointe
     Canvas cv;
     public GeradorTabuleiro GerTab;
     public (int i, int j) coordenada;
-    public bool branco;
+    public (int i, int j) enPassantCoord;
+    public bool branco, enPassant;
     private int movimentos = 0;
     private float tamanhoLocal;
     private void Awake()
@@ -63,11 +63,48 @@ public class PecaXadrezControlador : MonoBehaviour, IPointerDownHandler, IPointe
     private void MovimentarPeca(CasaXadrezControlador casaDest)
     {
         movimentos++;
+        if(GerTab.pecasMatriz[casaDest.coordenada.i,casaDest.coordenada.j] != null)
+        {
+            Destroy(GerTab.pecasMatriz[casaDest.coordenada.i, casaDest.coordenada.j]);
+        }
+        int x = 0;
+        if (gameObject.name == "PeaoB")
+            x = -1;
+        if (gameObject.name == "PeaoP")
+            x = 1;
+        if((casaDest.coordenada.i, casaDest.coordenada.j + x) == enPassantCoord)
+        {
+            Destroy(GerTab.pecasMatriz[casaDest.coordenada.i, casaDest.coordenada.j + x]);
+            enPassant = false;
+            GerTab.pecasMatriz[casaDest.coordenada.i, casaDest.coordenada.j + x] = null;
+        }
         GerTab.pecasMatriz[coordenada.i, coordenada.j] = null;
+        if(gameObject.name.Contains("Peao"))
+            VerEnPassant(coordenada.j, casaDest.coordenada.j);
         coordenada = casaDest.coordenada;
         GerTab.pecasMatriz[coordenada.i, coordenada.j] = this.gameObject;
         ResetarPeca();
         GerTab.ResetarMovimentos();
+    }
+    private void VerEnPassant(int startJ,int destJ)
+    {
+        if(movimentos == 1)
+        {
+            string strTemp = branco ? "PeaoP" : "PeaoB";
+            GameObject pecEsq = null, pecDir = null;
+            try { pecEsq = GerTab.pecasMatriz[coordenada.i + 1, destJ]; } catch { }
+            try { pecDir = GerTab.pecasMatriz[coordenada.i - 1, destJ]; } catch { }
+            if(pecEsq != null && pecEsq.name == strTemp)
+            {
+                pecEsq.GetComponent<PecaXadrezControlador>().enPassantCoord = (coordenada.i, destJ);
+                pecEsq.GetComponent<PecaXadrezControlador>().enPassant = true;
+            }
+            if(pecDir != null && pecDir.name == strTemp)
+            {
+                pecDir.GetComponent<PecaXadrezControlador>().enPassantCoord = (coordenada.i, destJ);
+                pecDir.GetComponent<PecaXadrezControlador>().enPassant = true;
+            }
+        }
     }
     private void ResetarPeca()
     {
@@ -78,11 +115,11 @@ public class PecaXadrezControlador : MonoBehaviour, IPointerDownHandler, IPointe
         (int i, int j)[] resultado = { };
         switch (transform.name)
         {
-            case "peaoB":
-                resultado = MovimentoPeao(true);
+            case "PeaoB":
+                resultado = MovimentoPeao(1);
                 break;
-            case "peaoP":
-                resultado = MovimentoPeao(false);
+            case "PeaoP":
+                resultado = MovimentoPeao(-1);
                 break;
             case "Torre":
                 resultado = MovimentoTorre();
@@ -105,57 +142,41 @@ public class PecaXadrezControlador : MonoBehaviour, IPointerDownHandler, IPointe
         return resultado;
     }
 
-    private void AdicionarPosicao(ref List<(int i, int j)> resultado,int i, int j, bool esp = false)
+    private void AdicionarPosicao(ref List<(int i, int j)> resultado,int i, int j)
     {
         if (i < 0 || i > 7 || j < 0 || j > 7)
-            return;
-        if (esp && GerTab.pecasMatriz[i, j] == null)
             return;
         resultado.Add((i, j));
     }
 
-    private (int i, int j)[] MovimentoPeao(bool branco)
+    private (int i, int j)[] MovimentoPeao(int x)
     {
         List<(int i, int j)> resultado = new List<(int i, int j)>();
+        if (coordenada.j + x > 7 || coordenada.j + x < 0)
+            return resultado.ToArray();
         if (movimentos >= 1)
         {
-            if (branco)
-            {
-                if (GerTab.pecasMatriz[coordenada.i, coordenada.j + 1] == null)
-                    AdicionarPosicao(ref resultado, coordenada.i, coordenada.j + 1);
-            }
-            else
-            {
-                if (GerTab.pecasMatriz[coordenada.i, coordenada.j - 1] == null)
-                    AdicionarPosicao(ref resultado, coordenada.i, coordenada.j - 1);
-            }
+            if (GerTab.pecasMatriz[coordenada.i, coordenada.j + x] == null)
+                AdicionarPosicao(ref resultado, coordenada.i, coordenada.j + x);
         }
         else
         {
-            if (branco)
-            {
-                AdicionarPosicao(ref resultado, coordenada.i, coordenada.j + 1);
-                AdicionarPosicao(ref resultado, coordenada.i, coordenada.j + 2);
-            }
-            else
-            {
-                AdicionarPosicao(ref resultado, coordenada.i, coordenada.j - 1);
-                AdicionarPosicao(ref resultado, coordenada.i, coordenada.j - 2);
-            } 
+            if (GerTab.pecasMatriz[coordenada.i, coordenada.j + x] != null)
+                goto fim;
+            AdicionarPosicao(ref resultado, coordenada.i, coordenada.j + x);
+            if (GerTab.pecasMatriz[coordenada.i, coordenada.j + x * 2] != null)
+                goto fim;
+            AdicionarPosicao(ref resultado, coordenada.i, coordenada.j + x * 2);
         }
-        if (branco)
-        {
-            AdicionarPosicao(ref resultado, coordenada.i + 1, coordenada.j + 1, true);
-            AdicionarPosicao(ref resultado, coordenada.i - 1, coordenada.j + 1, true);
-        }
-        else
-        {
-            AdicionarPosicao(ref resultado, coordenada.i + 1, coordenada.j - 1, true);
-            AdicionarPosicao(ref resultado, coordenada.i - 1, coordenada.j - 1, true);
-        }
+        fim:
+        if(enPassant)
+            AdicionarPosicao(ref resultado, enPassantCoord.i, enPassantCoord.j+x);
+        if (VerCalcMov(coordenada.i + 1, coordenada.j + x) && GerTab.pecasMatriz[coordenada.i + 1, coordenada.j + x] != null && PecaInimiga(coordenada.i + 1, coordenada.j + x))
+            AdicionarPosicao(ref resultado, coordenada.i + 1, coordenada.j + x);
+        if (VerCalcMov(coordenada.i - 1, coordenada.j + x) && GerTab.pecasMatriz[coordenada.i - 1, coordenada.j + x] != null && PecaInimiga(coordenada.i - 1, coordenada.j + x))
+            AdicionarPosicao(ref resultado, coordenada.i + -1, coordenada.j + x);
         return resultado.ToArray();
     }
-
     private (int i, int j)[] MovimentoTorre()
     {
         List<(int i, int j)> resultado = new List<(int i, int j)>();
