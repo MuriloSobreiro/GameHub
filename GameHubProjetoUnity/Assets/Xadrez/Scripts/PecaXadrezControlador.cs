@@ -2,16 +2,18 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using System;
 
 public class PecaXadrezControlador : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, IBeginDragHandler, IEndDragHandler, IDragHandler
 {
     RectTransform rt;
     Canvas cv;
-    public GeradorTabuleiro GerTab;
+    public GeradorTabuleiro gerTab;
+    private RodadaXadrezControlador rodCont;
     public (int i, int j) coordenada;
     public (int i, int j) enPassantCoord;
     public bool branco, enPassant;
-    private int movimentos = 0;
+    public int movimentos = 0;
     private float tamanhoLocal;
     private void Awake()
     {
@@ -21,6 +23,7 @@ public class PecaXadrezControlador : MonoBehaviour, IPointerDownHandler, IPointe
     private void Start()
     {
         tamanhoLocal = rt.sizeDelta.x;
+        rodCont = gerTab.rodCont;
     }
     public void OnBeginDrag(PointerEventData eventData)
     {
@@ -46,12 +49,12 @@ public class PecaXadrezControlador : MonoBehaviour, IPointerDownHandler, IPointe
     }
     private void MostrarMovimentos()
     {
-        GerTab.CriarMovimentos(CalcularMovimentos());
-        GerTab.pecaAtiva = this;
+        gerTab.CriarMovimentos(CalcularMovimentos());
+        gerTab.pecaAtiva = this;
     }
     private void VerificarMovimento(Vector2 posicao)
     {
-        foreach (var item in GerTab.casaHighligth)
+        foreach (var item in gerTab.casaHighligth)
         {
             if (Vector2.Distance(posicao, item.posicaGlob) / rt.lossyScale.x<tamanhoLocal/2f)
             {
@@ -60,31 +63,43 @@ public class PecaXadrezControlador : MonoBehaviour, IPointerDownHandler, IPointe
             }
         }
     }
-    private void MovimentarPeca(CasaXadrezControlador casaDest)
+    public void MovimentarPeca(CasaXadrezControlador casaDest, bool roque = false)
     {
         movimentos++;
-        if(GerTab.pecasMatriz[casaDest.coordenada.i,casaDest.coordenada.j] != null)
+        if(gerTab.pecasMatriz[casaDest.coordenada.i, casaDest.coordenada.j] == gerTab.reis[Convert.ToInt32(branco)].gameObject)//Movimento de Roque
         {
-            Destroy(GerTab.pecasMatriz[casaDest.coordenada.i, casaDest.coordenada.j]);
+            int mod = coordenada.i - casaDest.coordenada.i;
+            mod /= Mathf.Abs(mod);
+            gerTab.reis[Convert.ToInt32(branco)].MovimentarPeca(gerTab.casasMatriz[casaDest.coordenada.i+mod,casaDest.coordenada.j].GetComponent<CasaXadrezControlador>(), true);
         }
+        if(gerTab.pecasMatriz[casaDest.coordenada.i,casaDest.coordenada.j] != null)
+        {
+            Destroy(gerTab.pecasMatriz[casaDest.coordenada.i, casaDest.coordenada.j]);
+        }
+        if(enPassant)//Movimento de En Passant
+            MovEnPasssant(casaDest);
+        gerTab.pecasMatriz[coordenada.i, coordenada.j] = null;
+        if(gameObject.name.Contains("Peao"))//Verificação de En Passant
+            VerEnPassant(coordenada.j, casaDest.coordenada.j);
+        coordenada = casaDest.coordenada;
+        gerTab.pecasMatriz[coordenada.i, coordenada.j] = this.gameObject;
+        ResetarPeca();
+        gerTab.ResetarMovimentos();
+        if(!roque)//Caso especifico para mover uma peça sem passar o turno
+            rodCont.TrocarRodada();
+    }
+    private void MovEnPasssant(CasaXadrezControlador casaDest)
+    {
         int x = 0;
         if (gameObject.name == "PeaoB")
             x = -1;
         if (gameObject.name == "PeaoP")
             x = 1;
-        if((casaDest.coordenada.i, casaDest.coordenada.j + x) == enPassantCoord)
+        if ((casaDest.coordenada.i, casaDest.coordenada.j + x) == enPassantCoord)
         {
-            Destroy(GerTab.pecasMatriz[casaDest.coordenada.i, casaDest.coordenada.j + x]);
-            enPassant = false;
-            GerTab.pecasMatriz[casaDest.coordenada.i, casaDest.coordenada.j + x] = null;
+            Destroy(gerTab.pecasMatriz[casaDest.coordenada.i, casaDest.coordenada.j + x]);
+            gerTab.pecasMatriz[casaDest.coordenada.i, casaDest.coordenada.j + x] = null;
         }
-        GerTab.pecasMatriz[coordenada.i, coordenada.j] = null;
-        if(gameObject.name.Contains("Peao"))
-            VerEnPassant(coordenada.j, casaDest.coordenada.j);
-        coordenada = casaDest.coordenada;
-        GerTab.pecasMatriz[coordenada.i, coordenada.j] = this.gameObject;
-        ResetarPeca();
-        GerTab.ResetarMovimentos();
     }
     private void VerEnPassant(int startJ,int destJ)
     {
@@ -92,8 +107,8 @@ public class PecaXadrezControlador : MonoBehaviour, IPointerDownHandler, IPointe
         {
             string strTemp = branco ? "PeaoP" : "PeaoB";
             GameObject pecEsq = null, pecDir = null;
-            try { pecEsq = GerTab.pecasMatriz[coordenada.i + 1, destJ]; } catch { }
-            try { pecDir = GerTab.pecasMatriz[coordenada.i - 1, destJ]; } catch { }
+            try { pecEsq = gerTab.pecasMatriz[coordenada.i + 1, destJ]; } catch { }
+            try { pecDir = gerTab.pecasMatriz[coordenada.i - 1, destJ]; } catch { }
             if(pecEsq != null && pecEsq.name == strTemp)
             {
                 pecEsq.GetComponent<PecaXadrezControlador>().enPassantCoord = (coordenada.i, destJ);
@@ -156,24 +171,24 @@ public class PecaXadrezControlador : MonoBehaviour, IPointerDownHandler, IPointe
             return resultado.ToArray();
         if (movimentos >= 1)
         {
-            if (GerTab.pecasMatriz[coordenada.i, coordenada.j + x] == null)
+            if (gerTab.pecasMatriz[coordenada.i, coordenada.j + x] == null)
                 AdicionarPosicao(ref resultado, coordenada.i, coordenada.j + x);
         }
         else
         {
-            if (GerTab.pecasMatriz[coordenada.i, coordenada.j + x] != null)
+            if (gerTab.pecasMatriz[coordenada.i, coordenada.j + x] != null)
                 goto fim;
             AdicionarPosicao(ref resultado, coordenada.i, coordenada.j + x);
-            if (GerTab.pecasMatriz[coordenada.i, coordenada.j + x * 2] != null)
+            if (gerTab.pecasMatriz[coordenada.i, coordenada.j + x * 2] != null)
                 goto fim;
             AdicionarPosicao(ref resultado, coordenada.i, coordenada.j + x * 2);
         }
         fim:
         if(enPassant)
             AdicionarPosicao(ref resultado, enPassantCoord.i, enPassantCoord.j+x);
-        if (VerCalcMov(coordenada.i + 1, coordenada.j + x) && GerTab.pecasMatriz[coordenada.i + 1, coordenada.j + x] != null && PecaInimiga(coordenada.i + 1, coordenada.j + x))
+        if (VerCalcMov(coordenada.i + 1, coordenada.j + x) && gerTab.pecasMatriz[coordenada.i + 1, coordenada.j + x] != null && PecaInimiga(coordenada.i + 1, coordenada.j + x))
             AdicionarPosicao(ref resultado, coordenada.i + 1, coordenada.j + x);
-        if (VerCalcMov(coordenada.i - 1, coordenada.j + x) && GerTab.pecasMatriz[coordenada.i - 1, coordenada.j + x] != null && PecaInimiga(coordenada.i - 1, coordenada.j + x))
+        if (VerCalcMov(coordenada.i - 1, coordenada.j + x) && gerTab.pecasMatriz[coordenada.i - 1, coordenada.j + x] != null && PecaInimiga(coordenada.i - 1, coordenada.j + x))
             AdicionarPosicao(ref resultado, coordenada.i + -1, coordenada.j + x);
         return resultado.ToArray();
     }
@@ -182,9 +197,25 @@ public class PecaXadrezControlador : MonoBehaviour, IPointerDownHandler, IPointe
         List<(int i, int j)> resultado = new List<(int i, int j)>();
         resultado.AddRange(CalcCasasDir(1, 0));
         resultado.AddRange(CalcCasasDir(-1, 0));
+        Roque(ref resultado);
         resultado.AddRange(CalcCasasDir(0, 1));
         resultado.AddRange(CalcCasasDir(0, -1));
         return resultado.ToArray();
+    }
+    private void Roque(ref List<(int i, int j)> resultado)
+    {
+        PecaXadrezControlador rei = gerTab.reis[Convert.ToInt32(branco)];
+        if (movimentos > 0 || rei.movimentos > 0)
+            return;
+        (int i, int j) reiCoord = rei.coordenada;
+        if(reiCoord.i > coordenada.i && resultado.Contains((reiCoord.i - 1, reiCoord.j)))
+        {
+            resultado.Add(reiCoord);
+        }
+        if(reiCoord.i < coordenada.i && resultado.Contains((reiCoord.i + 1, reiCoord.j)))
+        {
+            resultado.Add(reiCoord);
+        }
     }
     private (int i, int j)[] MovimentoBispo()
     {
@@ -206,7 +237,7 @@ public class PecaXadrezControlador : MonoBehaviour, IPointerDownHandler, IPointe
     {
         List<(int i, int j)> resultado = new List<(int i, int j)>();
         Vector2 variacao = new Vector2(x, y);
-        while (VerCalcMov(coordenada.i + x, coordenada.j + y) && GerTab.pecasMatriz[coordenada.i + x, coordenada.j + y] == null)
+        while (VerCalcMov(coordenada.i + x, coordenada.j + y) && gerTab.pecasMatriz[coordenada.i + x, coordenada.j + y] == null)
         {
             AdicionarPosicao(ref resultado, coordenada.i + x, coordenada.j + y);
             x += (int)variacao.x;
@@ -225,7 +256,7 @@ public class PecaXadrezControlador : MonoBehaviour, IPointerDownHandler, IPointe
         {
             for (int j = -2; j < 3; j++)
             {
-                if(Mathf.Abs(i) + Mathf.Abs(j) == 3 && VerCalcMov(coordenada.i + i, coordenada.j + j) && (GerTab.pecasMatriz[coordenada.i + i, coordenada.j + j] == null ||PecaInimiga(coordenada.i + i, coordenada.j + j)))
+                if(Mathf.Abs(i) + Mathf.Abs(j) == 3 && VerCalcMov(coordenada.i + i, coordenada.j + j) && (gerTab.pecasMatriz[coordenada.i + i, coordenada.j + j] == null ||PecaInimiga(coordenada.i + i, coordenada.j + j)))
                     AdicionarPosicao(ref resultado, coordenada.i + i, coordenada.j + j);
             }
         }
@@ -238,7 +269,7 @@ public class PecaXadrezControlador : MonoBehaviour, IPointerDownHandler, IPointe
         {
             for (int j = -1; j < 2; j++)
             {
-                if(!(i==0 && j==0) && VerCalcMov(coordenada.i + i, coordenada.j + j) && (GerTab.pecasMatriz[coordenada.i + i, coordenada.j + j] == null || PecaInimiga(coordenada.i + i, coordenada.j + j)))
+                if(!(i==0 && j==0) && VerCalcMov(coordenada.i + i, coordenada.j + j) && (gerTab.pecasMatriz[coordenada.i + i, coordenada.j + j] == null || PecaInimiga(coordenada.i + i, coordenada.j + j)))
                     AdicionarPosicao(ref resultado, coordenada.i + i, coordenada.j + j);
             }
         }
@@ -253,7 +284,7 @@ public class PecaXadrezControlador : MonoBehaviour, IPointerDownHandler, IPointe
     }
     private bool PecaInimiga(int i, int j)
     {
-        if (GerTab.pecasMatriz[i, j].GetComponent<PecaXadrezControlador>().branco != branco)
+        if (gerTab.pecasMatriz[i, j].GetComponent<PecaXadrezControlador>().branco != branco)
             return true;
         else
             return false;
