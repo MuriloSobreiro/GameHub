@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using System;
 
 public class GeradorTabuleiro : MonoBehaviour
 {
@@ -10,11 +11,14 @@ public class GeradorTabuleiro : MonoBehaviour
     public GameObject[,] casasMatriz = new GameObject[8,8];
     public GameObject[,] pecasMatriz = new GameObject[8,8];
     private RectTransform rtTab;
+    public RodadaXadrezControlador rodCont;
     public List<CasaXadrezControlador> casaHighligth = new List<CasaXadrezControlador>();
     public PecaXadrezControlador pecaAtiva;
+    public PecaXadrezControlador[] reis = new PecaXadrezControlador[2];
     void Start()
     {
         rtTab = GetComponent<RectTransform>();
+        rodCont = GetComponentInParent<RodadaXadrezControlador>();
         CriarCasas();
         CriarPecas();
     }
@@ -54,18 +58,29 @@ public class GeradorTabuleiro : MonoBehaviour
                 {
                     peca.valor--;
                     pecasMatriz[i,j] = Instantiate(pecaPrefab, pecasGO.transform);
-                    pecasMatriz[i,j].GetComponent<Image>().sprite = imgPecas[peca.valor];
+                    Image img = pecasMatriz[i,j].GetComponent<Image>();
+                    img.sprite = imgPecas[peca.valor];
                     RectTransform rt = pecasMatriz[i,j].GetComponent<RectTransform>();
                     rt.sizeDelta = new Vector2(tamanho, tamanho);
                     rt.anchoredPosition = new Vector2(tamanho * i, tamanho * j);
                     pecasMatriz[i,j].name = peca.tipo;
                     PecaXadrezControlador ctrl = pecasMatriz[i, j].GetComponent<PecaXadrezControlador>();
                     ctrl.coordenada = (i, j);
-                    ctrl.GerTab = this;
+                    ctrl.gerTab = this;
                     ctrl.branco = peca.valor > 5 ?  true : false;
+                    if (peca.valor == 1)
+                        reis[0] = ctrl;
+                    if (peca.valor == 7)
+                        reis[1] = ctrl;
+                    if (ctrl.branco)
+                        rodCont.pecasB.Add(img);
+                    else
+                        rodCont.pecasP.Add(img);
+
                 }
             }
         }
+        rodCont.TrocarRodada();
     }
 
     public void CriarMovimentos((int i, int j)[] coords)

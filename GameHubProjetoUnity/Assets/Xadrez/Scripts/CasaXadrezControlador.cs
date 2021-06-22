@@ -35,7 +35,7 @@ public class CasaXadrezControlador : MonoBehaviour, IPointerDownHandler, IPointe
 
     public void OnPointerUp(PointerEventData eventData)
     {
-
+        Debug.Log("Click na casa " + gameObject.name);
     }
 
     public void OnPointerDown(PointerEventData eventData)
