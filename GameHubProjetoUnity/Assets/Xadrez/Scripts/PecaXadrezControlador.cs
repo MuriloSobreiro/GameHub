@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using System;
+using UnityEngine.UI;
 
 public class PecaXadrezControlador : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, IBeginDragHandler, IEndDragHandler, IDragHandler
 {
@@ -12,6 +13,7 @@ public class PecaXadrezControlador : MonoBehaviour, IPointerDownHandler, IPointe
     private RodadaXadrezControlador rodCont;
     public (int i, int j) coordenada;
     public (int i, int j) enPassantCoord;
+    public int tipoPeca = 0;
     public bool branco, enPassant;
     public int movimentos = 0;
     private float tamanhoLocal;
@@ -52,6 +54,50 @@ public class PecaXadrezControlador : MonoBehaviour, IPointerDownHandler, IPointe
         gerTab.CriarMovimentos(CalcularMovimentos());
         gerTab.pecaAtiva = this;
     }
+    public void AtualizarPeca()
+    {
+        GetComponent<Image>().sprite = gerTab.imgPecas[tipoPeca];
+        transform.name = NomePeca();
+        if (transform.name.Contains("Peao"))
+        {
+            if (branco && coordenada.j != 1)
+                movimentos++;
+            if (!branco && coordenada.j != 6)
+                movimentos++;
+        }
+    }
+    private string NomePeca()
+    {
+        string resposta = " ";
+        switch (branco?tipoPeca-6:tipoPeca)
+        {
+            case 0:
+                resposta = "Rainha";
+                break;
+            case 1:
+                resposta = "Rei";
+                break;
+            case 2:
+                resposta = "Torre";
+                break;
+            case 3:
+                resposta = "Cavalo";
+                break;
+            case 4:
+                resposta = "Bispo";
+                break;
+            case 5:
+                resposta = "Peao";
+                break;
+            default:
+                break;
+        }
+        if (tipoPeca == 5)
+            resposta += "P";
+        if (tipoPeca == 11)
+            resposta += "B";
+        return resposta;
+    }
     private void VerificarMovimento(Vector2 posicao)
     {
         foreach (var item in gerTab.casaHighligth)
@@ -70,7 +116,8 @@ public class PecaXadrezControlador : MonoBehaviour, IPointerDownHandler, IPointe
         {
             int mod = coordenada.i - casaDest.coordenada.i;
             mod /= Mathf.Abs(mod);
-            gerTab.reis[Convert.ToInt32(branco)].MovimentarPeca(gerTab.casasMatriz[casaDest.coordenada.i+mod,casaDest.coordenada.j].GetComponent<CasaXadrezControlador>(), true);
+            gerTab.reis[Convert.ToInt32(branco)].MovimentarPeca(gerTab.casasMatriz[casaDest.coordenada.i+mod*2,casaDest.coordenada.j].GetComponent<CasaXadrezControlador>(), true);
+            casaDest = gerTab.casasMatriz[casaDest.coordenada.i + mod, casaDest.coordenada.j].GetComponent<CasaXadrezControlador>();
         }
         if(gerTab.pecasMatriz[casaDest.coordenada.i,casaDest.coordenada.j] != null)
         {
@@ -159,7 +206,7 @@ public class PecaXadrezControlador : MonoBehaviour, IPointerDownHandler, IPointe
 
     private void AdicionarPosicao(ref List<(int i, int j)> resultado,int i, int j)
     {
-        if (i < 0 || i > 7 || j < 0 || j > 7)
+        if (!VerCalcMov(i, j))
             return;
         resultado.Add((i, j));
     }
@@ -167,7 +214,7 @@ public class PecaXadrezControlador : MonoBehaviour, IPointerDownHandler, IPointe
     private (int i, int j)[] MovimentoPeao(int x)
     {
         List<(int i, int j)> resultado = new List<(int i, int j)>();
-        if (coordenada.j + x > 7 || coordenada.j + x < 0)
+        if (coordenada.j + x > gerTab.tam-1 || coordenada.j + x < 0)
             return resultado.ToArray();
         if (movimentos >= 1)
         {
@@ -277,7 +324,7 @@ public class PecaXadrezControlador : MonoBehaviour, IPointerDownHandler, IPointe
     }
     private bool VerCalcMov(int x, int y)
     {
-        if (x < 0 || x > 7 || y < 0 || y > 7)
+        if (x < 0 || x > gerTab.tam-1 || y < 0 || y > gerTab.tam-1)
             return false;
         else
             return true;

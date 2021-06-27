@@ -659,6 +659,7 @@ MonoBehaviour:
   - {fileID: 6479079336869897410, guid: 64311a27ff40b2742844fc9cf7e25d88, type: 3}
   - {fileID: -6140863324906095670, guid: 64311a27ff40b2742844fc9cf7e25d88, type: 3}
   - {fileID: 2057987483157561142, guid: 64311a27ff40b2742844fc9cf7e25d88, type: 3}
+  tam: 8
   rodCont: {fileID: 0}
   casaHighligth: []
   pecaAtiva: {fileID: 0}
