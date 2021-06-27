@@ -66,7 +66,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: -1723284701494927329, guid: 7241fb1a4ee7a1c48801e6a4000a0d71, type: 3}
+  m_Sprite: {fileID: -7217302472746036128, guid: 7241fb1a4ee7a1c48801e6a4000a0d71, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -88,3 +88,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ee0106974f3cd4445add4f3b7bc4e345, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  gerTab: {fileID: 0}
+  branco: 0
+  enPassant: 0
+  movimentos: 0
